@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>To-Do App (Ravi)</title>
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', sans-serif;
+        }
+
+       body {
+    background: linear-gradient(135deg, #E0C3FC, #8EC5FC);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    overflow-x: hidden; /* Prevent horizontal overflow */
+    overflow-y: auto;   /* Allow vertical scrolling */
+    width: 100vw;       /* Ensure body width is fixed to viewport */
+}
+
+        .todo-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 2rem;
+            width: 100%;
+            max-width: 500px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+            color: #444;
+        }
+
+        .input-group {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .input-group input,
+        .input-group button {
+            padding: 0.75rem 1rem;
+            border: none;
+            border-radius: 1rem;
+        }
+
+        .input-group input {
+            flex: 1;
+            background: #f3f3f3;
+        }
+
+        .input-group button {
+            background: #8EC5FC;
+            color: white;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .input-group button:hover {
+            background: #6ea8e9;
+        }
+
+        .task {
+            background: #f9f9f9;
+            padding: 1rem;
+            border-radius: 1rem;
+            margin-bottom: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            position: relative;
+        }
+
+        .task.complete {
+            text-decoration: line-through;
+            opacity: 0.6;
+        }
+
+        .task input[type="datetime-local"] {
+            background: #fff;
+            border: 1px solid #ddd;
+            padding: 0.5rem;
+            border-radius: 0.5rem;
+            width: fit-content;
+        }
+
+        .task-buttons {
+            display: flex;
+            justify-content: flex-end;
+            gap: 0.5rem;
+        }
+
+        .task-buttons button {
+            background: transparent;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+
+       h1 {
+    text-align: center;
+    margin-bottom: 2.5rem;  /* Increase bottom margin to give space for date box */
+    font-weight: 600;
+    color: #444;
+    position: relative;
+}
+
+.date-box-wrapper {
+    margin-top:10px;
+    position: absolute;
+    top: 20px; /* Adjust the position to give space from the top of the header */
+    right: 20px; /* Keep it aligned to the right */
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+
+
+.date-box .day {
+    color: orangered;
+    font-weight: bold;
+}
+
+.date-box .month {
+    color: #007bff;
+    font-weight: bold;
+}
+
+.date-box .year {
+    color: #28a745;
+    font-weight: bold;
+}
+
+
+
+        /* Moving Bubbles */
+       .bubble {
+    position: absolute;
+    border-radius: 50%;
+    animation: move 10s infinite linear;
+    pointer-events: none; /* So user can click through bubbles */
+    z-index: 0; /* Behind the main content */
+}
+
+@keyframes move {
+    0% {
+        transform: translateY(0); /* Start from top */
+    }
+    100% {
+        transform: translateY(-100vh); /* Move vertically */
+    }
+}
+
+
+    </style>
+</head>
+
+<body>
+    <div class="todo-container">
+        <h1>
+    TO DO LIST 
+    <br>
+    <div class="date-box-wrapper">
+        <div class="date-box">
+            <span class="day" id="dayNum"></span>
+            <span class="month" id="month"></span>
+            <span class="year" id="currentYear"></span>
+        </div>
+    </div>
+</h1>
+
+
+
+        <div class="input-group">
+            <input type="text" id="task-input" placeholder="What's on your mind? 🧠">
+            <button onclick="addTask()">➕</button>
+        </div>
+        <div id="task-list"></div>
+    </div>
+
+    <script>
+
+        const date = new Date();
+
+// Day, Month, and Year Formatting
+const dayNum = String(date.getDate()).padStart(2, '0'); // Get day and pad it to 2 digits
+const month = date.toLocaleString('en-US', { month: 'short' }).toUpperCase(); // Short month name in uppercase
+const currentYear = date.getFullYear(); // Get full year
+
+// Set values in the HTML
+document.getElementById('dayNum').textContent = dayNum;
+document.getElementById('month').textContent = month;
+document.getElementById('currentYear').textContent = currentYear;
+
+        // Add Task Function
+        function addTask() {
+            const input = document.getElementById('task-input');
+            const taskText = input.value.trim();
+            if (!taskText) return;
+
+            const task = document.createElement('div');
+            task.className = 'task';
+
+            const text = document.createElement('div');
+            text.textContent = taskText;
+            text.contentEditable = false;
+
+            const datetime = document.createElement('input');
+            datetime.type = 'datetime-local';
+
+            const buttons = document.createElement('div');
+            buttons.className = 'task-buttons';
+
+            const completeBtn = document.createElement('button');
+            completeBtn.textContent = 'Complete';
+            completeBtn.onclick = () => task.classList.toggle('complete');
+
+            const editBtn = document.createElement('button');
+            editBtn.textContent = 'Edit';
+            editBtn.onclick = () => {
+                text.contentEditable = !text.isContentEditable;
+                editBtn.textContent = text.isContentEditable ? 'Save' : 'Edit';
+            };
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'Delete';
+            deleteBtn.onclick = () => task.remove();
+
+            buttons.append(completeBtn, editBtn, deleteBtn);
+            task.append(text, datetime, buttons);
+
+            document.getElementById('task-list').appendChild(task);
+            input.value = '';
+        }
+
+        // Add Event Listener for Enter Key to Add Task
+        document.getElementById('task-input').addEventListener('keypress', function (e) {
+            if (e.key === 'Enter') {
+                addTask();
+            }
+        });
+
+     
+
+// Create a single colorful bubble
+function createBubble() {
+
+
+    const bubble = document.createElement('div');
+    bubble.className = 'bubble';
+
+    const size = Math.random() * 30 + 10; // 10px to 40px
+    bubble.style.width = `${size}px`;
+    bubble.style.height = `${size}px`;
+
+    bubble.style.left = `${Math.random() * 100}vw`;
+    bubble.style.top = `${Math.random() * 100}vh`;
+
+    bubble.style.animationDuration = `${Math.random() * 10 + 5}s`; // 5s to 15s
+
+    // Random color
+    bubble.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 80%)`;
+
+    bubble.style.opacity = 0.7 + Math.random() * 0.3; // Random opacity
+
+    document.body.appendChild(bubble);
+
+    bubbleCount++; // Increment bubble count
+
+    // Remove bubble after animation ends
+    setTimeout(() => {
+        bubble.remove();
+        bubbleCount--; // Decrease count when bubble is removed
+    }, 20000); // 20s
+
+}
+
+// Create 3 bubbles every 500ms until the screen is full
+const bubbleInterval = setInterval(() => {
+    for (let i = 0; i < 3; i++) {
+        createBubble();
+    }
+}, 500);
+
+
+
+    </script>
+</body>
+
+</html>
