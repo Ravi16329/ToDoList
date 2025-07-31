@@ -2,17 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>To-Do App (Ravi)</title>
-  <style>
-    /* [Your Existing CSS Unchanged] */
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-      font-family: 'Inter', sans-serif;
-    }
+  
+  <!-- Bootstrap CDN -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet"/>
 
+  <style>
     body {
       background: linear-gradient(135deg, #E0C3FC, #8EC5FC);
       min-height: 100vh;
@@ -22,110 +18,36 @@
       padding: 20px;
       overflow-x: hidden;
       overflow-y: auto;
-      width: 100vw;
     }
 
     .todo-container {
       background: white;
       padding: 2rem;
-      border-radius: 2rem;
+      border-radius: 1.5rem;
+      max-width: 550px;
       width: 100%;
-      max-width: 500px;
       box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
       position: relative;
       z-index: 10;
     }
 
-    h1 {
-      text-align: center;
-      margin-bottom: 2.5rem;
-      font-weight: 600;
-      color: #444;
-      position: relative;
-    }
-
     .date-box-wrapper {
-      margin-top:10px;
       position: absolute;
       top: 20px;
       right: 20px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
+      font-weight: bold;
+      font-size: 0.9rem;
     }
 
-    .date-box .day { color: orangered; font-weight: bold; }
-    .date-box .month { color: #007bff; font-weight: bold; }
-    .date-box .year { color: #28a745; font-weight: bold; }
-
-    .input-group {
-      display: flex;
-      gap: 0.5rem;
-      margin-bottom: 1rem;
-    }
-
-    .input-group input,
-    .input-group button {
-      padding: 0.75rem 1rem;
-      border: none;
-      border-radius: 1rem;
-    }
-
-    .input-group input {
-      flex: 1;
-      background: #f3f3f3;
-    }
-
-    .input-group button {
-      background: #8EC5FC;
-      color: white;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.3s;
-    }
-
-    .input-group button:hover {
-      background: #6ea8e9;
-    }
-
-    .task {
-      background: #f9f9f9;
-      padding: 1rem;
-      border-radius: 1rem;
-      margin-bottom: 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      position: relative;
-    }
+    .day { color: orangered; }
+    .month { color: #007bff; }
+    .year { color: #28a745; }
 
     .task.complete {
       text-decoration: line-through;
       opacity: 0.6;
     }
 
-    .task input[type="datetime-local"] {
-      background: #fff;
-      border: 1px solid #ddd;
-      padding: 0.5rem;
-      border-radius: 0.5rem;
-      width: fit-content;
-    }
-
-    .task-buttons {
-      display: flex;
-      justify-content: flex-end;
-      gap: 0.5rem;
-    }
-
-    .task-buttons button {
-      background: transparent;
-      border: none;
-      font-size: 1rem;
-      cursor: pointer;
-    }
-
-    /* Bubbles */
     .bubble {
       position: absolute;
       border-radius: 50%;
@@ -142,51 +64,49 @@
 </head>
 <body>
 
-  <div class="todo-container">
-    <h1>
-      TO DO LIST 
-      <br>
-      <div class="date-box-wrapper">
-        <div class="date-box">
-          <span class="day" id="dayNum"></span>
-          <span class="month" id="month"></span>
-          <span class="year" id="currentYear"></span>
-        </div>
-      </div>
-    </h1>
-
-    <div class="input-group">
-      <input type="text" id="task-input" placeholder="What's on your mind? 🧠">
-      <button onclick="addTask()">➕</button>
+  <div class="todo-container container">
+    <h2 class="text-center fw-bold mb-4">TO DO LIST</h2>
+    <div class="date-box-wrapper">
+      <span class="day" id="dayNum"></span> 
+      <span class="month" id="month"></span> 
+      <span class="year" id="currentYear"></span>
     </div>
+
+    <div class="input-group mb-3">
+      <input type="text" id="task-input" class="form-control" placeholder="What's on your mind? 🧠">
+      <button class="btn btn-primary" onclick="addTask()">➕</button>
+    </div>
+
     <div id="task-list"></div>
   </div>
 
-  <!-- Reminder Video Popup -->
-  <div id="video-popup" style="display: none; position: fixed; top: 0; left: 0; 
-    width: 100vw; height: 100vh; background: rgba(0,0,0,0.8); 
-    z-index: 9999; justify-content: center; align-items: center; flex-direction: column; color: white;">
+ <!-- Reminder Popup -->
+<div id="video-popup" class="d-none position-fixed top-0 start-0 w-100 h-100 d-flex flex-column justify-content-center align-items-center text-white" style="background: rgba(0,0,0,0.8); z-index: 9999;">
+  
+  <video id="video1" width="500" controls>
+    <source src="videos/video1.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <video id="video2" width="500" controls class="d-none">
+    <source src="videos/video2.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <video id="video3" width="500" controls class="d-none">
+    <source src="videos/video3.mp4" type="video/mp4">
+    Your browser does not support the video tag.
+  </video>
+
+  <p class="mt-3 fs-5">Have you completed the task? If not, extend the time ⏰</p>
+  <button onclick="closeVideoPopup()" class="btn btn-success mt-2">Got it!</button>
+</div>
+
+
     
-    <video id="reminder-video" width="500" controls autoplay>
-      <source src="videos/WIN_20250730_22_50_21_Pro.mp4" type="video/mp4">
-      Your browser does not support the video tag.
-    </video>
 
-    <iframe width="560" height="315"
-  src="https://www.youtube.com/embed/uhY2fqU_1yA?autoplay=1&mute=1"
-  title="YouTube video player"
-  frameborder="0"
-  allow="autoplay; encrypted-media"
-  allowfullscreen>
-</iframe>
-
-
-
-    <p style="margin-top: 20px; font-size: 1.2rem;">Have you completed the task? If not, extend the time ⏰</p>
-    <button onclick="closeVideoPopup()" style="margin-top: 10px; padding: 10px 20px; background: #28a745; border: none; color: white; border-radius: 10px; cursor: pointer;">
-      Got it!
-    </button>
-  </div>
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
   <script>
     const date = new Date();
@@ -202,51 +122,48 @@
       if (!taskText) return;
 
       const task = document.createElement('div');
-      task.className = 'task';
+      task.className = 'task p-3 mb-3 bg-light rounded';
 
       const text = document.createElement('div');
       text.textContent = taskText;
       text.contentEditable = false;
+      text.classList.add('mb-2');
 
       const datetime = document.createElement('input');
       datetime.type = 'datetime-local';
+      datetime.className = 'form-control mb-2 w-auto';
 
       const buttons = document.createElement('div');
-      buttons.className = 'task-buttons';
+      buttons.className = 'task-buttons d-flex gap-2 justify-content-end';
 
       const completeBtn = document.createElement('button');
-      completeBtn.textContent = 'Complete';
+      completeBtn.textContent = '✅';
+      completeBtn.className = 'btn btn-outline-success btn-sm';
       completeBtn.onclick = () => task.classList.toggle('complete');
 
       const editBtn = document.createElement('button');
-      editBtn.textContent = 'Edit';
+      editBtn.textContent = '✏️';
+      editBtn.className = 'btn btn-outline-warning btn-sm';
       editBtn.onclick = () => {
         text.contentEditable = !text.isContentEditable;
-        editBtn.textContent = text.isContentEditable ? 'Save' : 'Edit';
+        editBtn.textContent = text.isContentEditable ? '💾' : '✏️';
       };
 
       const deleteBtn = document.createElement('button');
-      deleteBtn.textContent = 'Delete';
+      deleteBtn.textContent = '🗑️';
+      deleteBtn.className = 'btn btn-outline-danger btn-sm';
       deleteBtn.onclick = () => {
         task.remove();
-        // Remove from tracking
         const index = trackedTasks.findIndex(t => t.element === task);
         if (index > -1) trackedTasks.splice(index, 1);
       };
 
       buttons.append(completeBtn, editBtn, deleteBtn);
       task.append(text, datetime, buttons);
-
       document.getElementById('task-list').appendChild(task);
       input.value = '';
 
-      // Track this task
-      trackedTasks.push({
-        element: task,
-        textElement: text,
-        timeInput: datetime,
-        alerted: false
-      });
+      trackedTasks.push({ element: task, textElement: text, timeInput: datetime, alerted: false });
     }
 
     document.getElementById('task-input').addEventListener('keypress', function (e) {
@@ -254,56 +171,69 @@
     });
 
     // Bubbles
-    let bubbleCount = 0;
     function createBubble() {
       const bubble = document.createElement('div');
       bubble.className = 'bubble';
-
       const size = Math.random() * 30 + 10;
       bubble.style.width = `${size}px`;
       bubble.style.height = `${size}px`;
-
       bubble.style.left = `${Math.random() * 100}vw`;
       bubble.style.top = `${Math.random() * 100}vh`;
       bubble.style.animationDuration = `${Math.random() * 10 + 5}s`;
       bubble.style.backgroundColor = `hsl(${Math.random() * 360}, 70%, 80%)`;
       bubble.style.opacity = 0.7 + Math.random() * 0.3;
-
       document.body.appendChild(bubble);
-      bubbleCount++;
-
-      setTimeout(() => {
-        bubble.remove();
-        bubbleCount--;
-      }, 20000);
+      setTimeout(() => bubble.remove(), 20000);
     }
-
-    setInterval(() => {
-      for (let i = 0; i < 3; i++) createBubble();
-    }, 500);
+    setInterval(() => { for (let i = 0; i < 3; i++) createBubble(); }, 500);
 
     function showVideoPopup() {
-      document.getElementById("video-popup").style.display = "flex";
-      document.getElementById("reminder-video").currentTime = 0;
-      document.getElementById("reminder-video").play();
-    }
+  const popup = document.getElementById("video-popup");
+  const video1 = document.getElementById("video1");
+  const video2 = document.getElementById("video2");
+  const video3 = document.getElementById("video3");
 
-    function closeVideoPopup() {
-      document.getElementById("video-popup").style.display = "none";
-      document.getElementById("reminder-video").pause();
-    }
+  popup.classList.remove("d-none");
 
-    // Deadline check every 30 seconds
+  video1.classList.remove("d-none");
+  video2.classList.add("d-none");
+  video3.classList.add("d-none");
+
+  video1.currentTime = 0;
+  video1.volume = 1.0;
+  video1.play();
+
+  video1.onended = () => {
+    video1.classList.add("d-none");
+    video2.classList.remove("d-none");
+    video2.currentTime = 0;
+    video2.volume = 1.0;
+    video2.play();
+
+    video2.onended = () => {
+      video2.classList.add("d-none");
+      video3.classList.remove("d-none");
+      video3.currentTime = 0;
+      video3.volume = 1.0;
+      video3.play();
+    };
+  };
+}
+
+function closeVideoPopup() {
+  document.getElementById("video-popup").classList.add("d-none");
+
+  document.getElementById("video1").pause();
+  document.getElementById("video2").pause();
+  document.getElementById("video3").pause();
+}
+
+    // Deadline reminder
     setInterval(() => {
       const now = new Date();
       trackedTasks.forEach(taskObj => {
         const deadline = new Date(taskObj.timeInput.value);
-        if (
-          taskObj.timeInput.value &&
-          deadline <= now &&
-          !taskObj.alerted &&
-          !taskObj.element.classList.contains('complete')
-        ) {
+        if (taskObj.timeInput.value && deadline <= now && !taskObj.alerted && !taskObj.element.classList.contains('complete')) {
           showVideoPopup();
           taskObj.alerted = true;
         }
