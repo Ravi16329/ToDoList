@@ -31,7 +31,8 @@
     };
 
     /* Reminder video sequence — update paths to match your /videos folder */
-    const REMINDER_VIDEOS = ['videos/video1.mp4', 'videos/video2.mp4', 'videos/video3.mp4'];
+    const REMINDER_VIDEOS = ['videos/video4.mp4', 'videos/video6.mp4'];
+    //'videos/video5.mp4'
 
     /* ============================================================
        ICONS
