@@ -12,6 +12,9 @@
     /* ============================================================
        STATE
        ============================================================ */
+    const STORAGE_KEY = 'todoTasks';
+    const STORAGE_NEXTID_KEY = 'todoNextId';
+
     let tasks = []; // { id, text, when, complete, alerted }
     let nextId = 1;
 
@@ -41,6 +44,40 @@
     const ICON_EDIT = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>';
     const ICON_SAVE = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>';
     const ICON_TRASH = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
+
+    /* ============================================================
+       PERSISTENCE (localStorage)
+       ============================================================ */
+    function saveTasks() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
+            localStorage.setItem(STORAGE_NEXTID_KEY, String(nextId));
+        } catch (err) {
+            console.error('Could not save tasks to localStorage:', err);
+        }
+    }
+
+    function loadTasks() {
+        try {
+            const savedTasks = localStorage.getItem(STORAGE_KEY);
+            const savedNextId = localStorage.getItem(STORAGE_NEXTID_KEY);
+
+            if (savedTasks) {
+                tasks = JSON.parse(savedTasks);
+            }
+
+            if (savedNextId) {
+                nextId = parseInt(savedNextId, 10);
+            } else if (tasks.length) {
+                // Fallback: derive nextId from existing tasks if it wasn't saved
+                nextId = Math.max(...tasks.map(t => t.id)) + 1;
+            }
+        } catch (err) {
+            console.error('Could not load tasks from localStorage:', err);
+            tasks = [];
+            nextId = 1;
+        }
+    }
 
     /* ============================================================
        RENDER
@@ -113,6 +150,7 @@
                     text.textContent = task.text;
                     text.contentEditable = 'false';
                     editBtn.innerHTML = ICON_EDIT;
+                    saveTasks(); // persist the edited text
                 } else {
                     text.contentEditable = 'true';
                     text.focus();
@@ -161,22 +199,26 @@
        ============================================================ */
     function addTask(text, when) {
         tasks.push({ id: nextId++, text, when: when || null, complete: false, alerted: false });
+        saveTasks();
         render();
     }
 
     function toggleComplete(id) {
         const t = tasks.find(t => t.id === id);
         if (t) t.complete = !t.complete;
+        saveTasks();
         render();
     }
 
     function removeTask(id) {
         tasks = tasks.filter(t => t.id !== id);
+        saveTasks();
         render();
     }
 
     els.clearDone.addEventListener('click', () => {
         tasks = tasks.filter(t => !t.complete);
+        saveTasks();
         render();
     });
 
@@ -198,12 +240,15 @@
 
     function checkDeadlines() {
         const now = Date.now();
+        let changed = false;
         tasks.forEach(t => {
             if (t.when && !t.complete && !t.alerted && new Date(t.when).getTime() <= now) {
                 t.alerted = true;
                 alertQueue.push(t);
+                changed = true;
             }
         });
+        if (changed) saveTasks();
         if (alertQueue.length && !alertActiveTask) playNextAlert();
         render(); // refresh urgency colors
     }
@@ -242,6 +287,7 @@
             const newTime = new Date(Date.now() + 15 * 60 * 1000);
             alertActiveTask.when = newTime.toISOString().slice(0, 16);
             alertActiveTask.alerted = false;
+            saveTasks();
         }
         closeAlert();
     });
@@ -252,5 +298,6 @@
     /* ============================================================
        INIT
        ============================================================ */
+    loadTasks();
     render();
 })();
