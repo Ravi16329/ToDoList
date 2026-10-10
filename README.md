@@ -18,7 +18,7 @@
 
 Ledger is a simple to-do list that lives entirely in your browser. Type a task, optionally set a
 due date/time, and Ledger will track it for you. When the due time hits, a **full-screen alert with
-video** pops up so the task is impossible to miss.
+video** pops up so the task is possible to track.
 
 No sign-up. No server. No database. Just `index.html` + `style.css` + `script.js`.
 
