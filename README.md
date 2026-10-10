@@ -149,3 +149,4 @@ If several tasks are due around the same time, alerts play **one after another**
 </div>
 
 
+Future Improvements:
